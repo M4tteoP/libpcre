@@ -1,3 +1,58 @@
+# Notes about /M4tteoP/libpcre fork.
+[This repo](https://github.com/M4tteoP/libpcre) is a fork of https://github.com/maxfierke/libpcre.
+[Here](https://github.com/maxfierke/crystal-wasm-tools/tree/8ce4b7a4f9f94f2260771ff5e3c4bd89f0043a53) can be found some details about the origin of maxfierke fork about compiling Crystal dependencies for use with WASM.
+
+
+
+
+It is intended to remove some dependencies inside the [.sh script](./build_for_wasm.sh) that permits to build libpcre both with WASI-sdk and emscripten.
+
+The script accepts one of the following targets as parameter:
+- `wasm32-emscripten`
+- `wasm32-wasi`
+
+## Compiling with EMSDK
+EMSDK installation:
+```bash
+git clone https://github.com/emscripten-core/emsdk.git -b 3.1.15 \
+cd ./emsdk
+./emsdk install 3.1.7 \
+  && ./emsdk activate 3.1.7 \
+  && echo "source /root/emsdk/emsdk_env.sh" >> ~/.bashrc
+
+```
+PCRE build:
+```bash
+autoreconf -ivf \
+  && ./build_for_wasm.sh wasm32-emscripten \
+  && mkdir /usr/local/pcre \
+  && cp targets/wasm32-emscripten/*.a /usr/local/pcre \
+```
+Under `./targets/` the static library (`.a`) should be compiled and then moved to a user folder (e.g. `/usr/local/pcre`).
+
+## Compiling with WASI-SDK
+SDK installation:
+```bash
+wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz \
+    && tar xvf wasi-sdk-12.0-linux.tar.gz -C /opt/ \
+    && mv /opt/wasi-sdk-12.0/ /opt/wasi-sdk \
+    && rm wasi-sdk-12.0-linux.tar.gz 
+export WASI_SDK_PATH="/opt/wasi-sdk"
+```
+PCRE build:
+```bash
+git clone https://github.com/m4tteop/libpcre.git -b wasm-emscripten
+cd libpcre
+autoreconf -ivf \
+  && ./build_for_wasm.sh wasm32-wasi \
+  && mkdir /usr/local/pcre \
+  && cp targets/wasm32-wasi/*.a /usr/local/pcre
+```
+Under `./targets/` the static library (`.a`) should be compiled and then moved to a user folder (e.g. `/usr/local/pcre`).
+> Note: Even more updated version of `wasi-sdk` may work.
+
+
+
 README file for PCRE (Perl-compatible regular expression library)
 -----------------------------------------------------------------
 

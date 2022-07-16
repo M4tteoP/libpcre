@@ -24,7 +24,7 @@ if [ "$target" == "wasm32-wasi" ]; then
   export LD="$WASI_SDK_PATH/bin/wasm-ld"
 fi
 
-$CONFIGURE --host wasm32 \
+$CONFIGURE --host=none-none-none \
   --disable-dependency-tracking \
   --enable-utf8 \
   --enable-pcre8 \
